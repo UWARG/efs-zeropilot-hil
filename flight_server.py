@@ -31,7 +31,6 @@ sock_out = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 print(f"--- JSBSim SERVER RUNNING ---")
 print(f"Listening on {JSBSIM_CONTROL_PORT}")
 print(f"Sending State to {TARGET_PORT}")
-print(f"Listening for controls on {JSBSIM_CONTROL_PORT}")
 
 controls = [0.0, 0.0, 0.0, 0.0, 0.0] 
 
