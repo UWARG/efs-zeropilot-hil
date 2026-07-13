@@ -4,7 +4,7 @@ import struct
 import time
 import os
 from hil_config import AircraftState, JSBSIM_STATE_PORT, UDP_HOST
-from hil_config import PWM_TARGET_IP, PWM_TARGET_PORT, HOST_IP, HOST_PORT
+from hil_config import JSBSIM_CONTROL_PORT, HOST_IP
 
 
 TARGET_IP = UDP_HOST;        TARGET_PORT = JSBSIM_STATE_PORT  # Send full AircraftState
@@ -23,15 +23,15 @@ fdm.run_ic()
 
 
 sock_in = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-sock_in.bind((HOST_IP, HOST_PORT))
+sock_in.bind((HOST_IP, JSBSIM_CONTROL_PORT))
 sock_in.setblocking(False)
 
 sock_out = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 print(f"--- JSBSim SERVER RUNNING ---")
-print(f"Listening on {HOST_PORT}")
+print(f"Listening on {JSBSIM_CONTROL_PORT}")
 print(f"Sending State to {TARGET_PORT}")
-print(f"Sending Controls to {PWM_TARGET_PORT}")
+print(f"Listening for controls on {JSBSIM_CONTROL_PORT}")
 
 controls = [0.0, 0.0, 0.0, 0.0, 0.0] 
 

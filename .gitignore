@@ -2,3 +2,6 @@
 .vscode
 .vscode/
 .pio/
+__pycache__/
+ 
+ 

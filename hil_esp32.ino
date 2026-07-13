@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include <math.h>
+#include "pwm_capture.h"
 
 // from power_module.hpp: INA228_ADDR = 0b1000101 = 0x45, not 0x40
 #define I2C_ADDR 0x45
@@ -296,6 +297,8 @@ void setup() {
     Wire.onReceive(onReceive);
     Wire.onRequest(onRequest);
 
+    setupPwmCapture();
+
     Serial.println("[ESP32] HIL peripheral emulator ready");
     Serial.print("[ESP32] GPS spoof UART baud=");
     Serial.print(GPS_BAUD);
@@ -307,6 +310,7 @@ void setup() {
 
 void loop() {
     readPiUartPackets();
+    sendPwmCapturePacket();
 
     static uint32_t lastGpsMs = 0;
     uint32_t now = millis();
