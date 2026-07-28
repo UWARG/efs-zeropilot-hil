@@ -7,8 +7,8 @@ CRC8 is an XOR over the type byte + the 10 data bytes
 
 #include "pwm_capture.h"
 
-// TODO: confirm these pin numbers against the ZeroPilot schematic
-static const uint8_t PWM_CAPTURE_PINS[PWM_CAPTURE_NUM_CHANNELS] = {25, 26, 27, 32, 33};
+// TODO: pin 25->elevator, 4->aileron, 5->rudder, 6->flap, 33->throttle when physically connect to ZP's 5 PWM outputs
+static const uint8_t PWM_CAPTURE_PINS[PWM_CAPTURE_NUM_CHANNELS] = {15, 4, 5, 6, 33};
 
 // order matches hil_config.py's PWM_CHANNEL_NAMES:
 // elevator, aileron, rudder, flap, throttle
@@ -44,7 +44,7 @@ static void (*const kEdgeHandlers[PWM_CAPTURE_NUM_CHANNELS])() = {
 
 void setupPwmCapture() {
     for (int i = 0; i < PWM_CAPTURE_NUM_CHANNELS; i++) {
-        pinMode(PWM_CAPTURE_PINS[i], INPUT);
+        pinMode(PWM_CAPTURE_PINS[i], INPUT_PULLDOWN);
         attachInterrupt(digitalPinToInterrupt(PWM_CAPTURE_PINS[i]), kEdgeHandlers[i], CHANGE);
     }
 }
