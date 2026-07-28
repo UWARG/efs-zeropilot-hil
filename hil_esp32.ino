@@ -402,7 +402,7 @@ void setup()
     GPS.begin(GPS_BAUD, SERIAL_8N1, GPS_RX_PIN, GPS_TX_PIN);
 
     setupFakeINA228Registers();
-    Wire.begin(INA228_ADDR); // I2C slave, default pins GPIO21(SDA) GPIO22(SCL)
+    Wire.begin(INA228_ADDR); // I2C slave, ESP32-S3 Arduino core default: GPIO8(SDA) GPIO9(SCL)
     Wire.onReceive(onReceive);
     Wire.onRequest(onRequest);
 
