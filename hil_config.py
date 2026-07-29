@@ -40,6 +40,8 @@ SERVO_MIN_US = 1000
 SERVO_MID_US = 1500
 SERVO_MAX_US = 2000
 
+DEFAULT_LAT_DEG = 43.4723  # waterloo, used as JSBSim's initial position and the ESP32's default
+DEFAULT_LON_DEG = -80.5449
 
 @dataclass
 class AircraftState:

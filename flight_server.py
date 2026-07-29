@@ -5,6 +5,7 @@ import time
 import os
 from hil_config import AircraftState, JSBSIM_STATE_PORT, UDP_HOST
 from hil_config import JSBSIM_CONTROL_PORT, HOST_IP
+from hil_config import DEFAULT_LAT_DEG, DEFAULT_LON_DEG
 
 
 TARGET_IP = UDP_HOST;        TARGET_PORT = JSBSIM_STATE_PORT  # Send full AircraftState
@@ -17,8 +18,12 @@ fdm = jsbsim.FGFDMExec(ROOT_DIR)
 fdm.load_model(AIRCRAFT)
 fdm.set_dt(0.01)
 
-fdm['ic/h-sl-ft'] = 2000; fdm['ic/vc-kts'] = 5
+fdm['ic/h-sl-ft'] = 2000
+fdm['ic/vc-kts'] = 5
 fdm['propulsion/engine[0]/set-running'] = 1
+# was doing conversion near africa (0) placing at waterloo now just like hardcoded esp32 values
+fdm['ic/lat-geod-deg'] = DEFAULT_LAT_DEG
+fdm['ic/long-gc-deg'] = DEFAULT_LON_DEG
 fdm.run_ic()
 
 

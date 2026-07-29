@@ -3,6 +3,10 @@
 #include <math.h>
 #include "pwm_capture.h"
 
+// TODO: keep this in sync with DEFAULT_LAT_DEG/DEFAULT_LON_DEG in hil_config.py
+constexpr float DEFAULT_LAT_DEG = 43.4723f;
+constexpr float DEFAULT_LON_DEG = -80.5449f;
+
 // INA228 register addresses used by ZeroPilot
 constexpr uint8_t REG_CONFIG = 0x00;
 constexpr uint8_t REG_ADC_CONFIG = 0x01;
@@ -65,8 +69,8 @@ static AircraftState g_state = {
     0.0f,      // pitch_deg
     0.0f,      // roll_deg
     0.0f,      // heading_deg
-    43.4723f,  // latitude_deg, default near Waterloo
-    -80.5449f, // longitude_deg
+    DEFAULT_LAT_DEG,  // latitude_deg, default near Waterloo
+    DEFAULT_LON_DEG, // longitude_deg
     1.0f,      // g_force
     0.0f,      // roll_rate_rad_s
     0.0f       // pitch_rate_rad_s
@@ -247,14 +251,14 @@ void parseAircraftStatePayload(const uint8_t *payload)
     g_state.pitch_rate_rad_s = readI32BE(payload + 37) / 1000.0f;
     g_haveState = true;
 
-    Serial.print("[ESP32] state alt_ft=");
-    Serial.print(g_state.altitude_ft, 2);
-    Serial.print(" lat=");
-    Serial.print(g_state.latitude_deg, 7);
-    Serial.print(" lon=");
-    Serial.print(g_state.longitude_deg, 7);
-    Serial.print(" spd_kts=");
-    Serial.println(g_state.airspeed_kts, 2);
+    // Serial.print("[ESP32] state alt_ft=");
+    // Serial.print(g_state.altitude_ft, 2);
+    // Serial.print(" lat=");
+    // Serial.print(g_state.latitude_deg, 7);
+    // Serial.print(" lon=");
+    // Serial.print(g_state.longitude_deg, 7);
+    // Serial.print(" spd_kts=");
+    // Serial.println(g_state.airspeed_kts, 2);
 }
 
 uint8_t nmeaChecksum(const char *body)
@@ -306,6 +310,11 @@ void sendGpsNmea()
 {
     char lat[16], lon[16];
     char ns, ew;
+
+    // debug
+    GPS.print("[DEBUG] raw lat="); GPS.println(g_state.latitude_deg, 7);
+    GPS.print("[DEBUG] raw lon="); GPS.println(g_state.longitude_deg, 7);
+
     decimalDegToNmea(g_state.latitude_deg, true, lat, sizeof(lat), &ns);
     decimalDegToNmea(g_state.longitude_deg, false, lon, sizeof(lon), &ew);
 
@@ -386,6 +395,8 @@ void readPiUartPackets()
             }
 
             parseAircraftStatePayload(buf + 1);
+            // for checking esp32 -> pi
+            // Serial.write(buf, PKT_LEN);  // echo the validated packet straight back to the pi
         }
         else if (idx >= PKT_LEN)
         {
@@ -402,7 +413,7 @@ void setup()
     GPS.begin(GPS_BAUD, SERIAL_8N1, GPS_RX_PIN, GPS_TX_PIN);
 
     setupFakeINA228Registers();
-    Wire.begin(INA228_ADDR); // I2C slave, ESP32-S3 Arduino core default: GPIO8(SDA) GPIO9(SCL)
+    Wire.begin(INA228_ADDR); // I2C slave, default pins GPIO21(SDA) GPIO22(SCL)
     Wire.onReceive(onReceive);
     Wire.onRequest(onRequest);
 
