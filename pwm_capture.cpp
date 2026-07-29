@@ -7,8 +7,8 @@ CRC8 is an XOR over the type byte + the 10 data bytes
 
 #include "pwm_capture.h"
 
-// TODO: pin 25->elevator, 4->aileron, 5->rudder, 6->flap, 33->throttle when physically connect to ZP's 5 PWM outputs
-static const uint8_t PWM_CAPTURE_PINS[PWM_CAPTURE_NUM_CHANNELS] = {15, 4, 5, 6, 33};
+// TODO: pin 25->elevator, 4->aileron, 5->rudder, 6->flap, 7->throttle when physically connect to ZP's 5 PWM outputs
+static const uint8_t PWM_CAPTURE_PINS[PWM_CAPTURE_NUM_CHANNELS] = {15, 4, 5, 6, 7};
 
 // order matches hil_config.py's PWM_CHANNEL_NAMES:
 // elevator, aileron, rudder, flap, throttle

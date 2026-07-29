@@ -3,6 +3,21 @@
 #include <math.h>
 #include "pwm_capture.h"
 
+// // temp test sig generator (mimics zp)
+// #define TEST_PWM_PIN 18
+
+// void setupTestPwmOutput() {
+//     pinMode(TEST_PWM_PIN, OUTPUT);
+// }
+
+// void sendTestPulse(uint16_t highUs) {
+//     digitalWrite(TEST_PWM_PIN, HIGH);
+//     delayMicroseconds(highUs);
+//     digitalWrite(TEST_PWM_PIN, LOW);
+//     delayMicroseconds(20000 - highUs);
+// }
+// // zp mime ends here
+
 // TODO: keep this in sync with DEFAULT_LAT_DEG/DEFAULT_LON_DEG in hil_config.py
 constexpr float DEFAULT_LAT_DEG = 43.4723f;
 constexpr float DEFAULT_LON_DEG = -80.5449f;
@@ -312,8 +327,8 @@ void sendGpsNmea()
     char ns, ew;
 
     // debug
-    GPS.print("[DEBUG] raw lat="); GPS.println(g_state.latitude_deg, 7);
-    GPS.print("[DEBUG] raw lon="); GPS.println(g_state.longitude_deg, 7);
+    // GPS.print("[DEBUG] raw lat="); GPS.println(g_state.latitude_deg, 7);
+    // GPS.print("[DEBUG] raw lon="); GPS.println(g_state.longitude_deg, 7);
 
     decimalDegToNmea(g_state.latitude_deg, true, lat, sizeof(lat), &ns);
     decimalDegToNmea(g_state.longitude_deg, false, lon, sizeof(lon), &ew);
@@ -418,6 +433,9 @@ void setup()
     Wire.onRequest(onRequest);
 
     setupPwmCapture();
+    // // zp mime starts here
+    // setupTestPwmOutput();
+    // // zp mime ends here
 
     Serial.println("[ESP32] HIL peripheral emulator ready");
     Serial.print("[ESP32] GPS spoof UART baud=");
@@ -444,6 +462,19 @@ void loop()
     // from power_module_iface.hpp: charge and energy are accumulated fields, accumulate here so ZP sees realistic values
     fakeCharge += FAKE_CURRENT * (10.0f / 1000.0f); // amps * dt_sec
     fakeEnergy += FAKE_POWER * (10.0f / 1000.0f);   // watts * dt_sec
+
+    // // zp mime starts here
+    // static uint32_t lastTestChangeMs = 0;
+    // static int testWidths[] = {1000, 1500, 2000};
+    // static int testWidthIdx = 0;
+    // if (millis() - lastTestChangeMs > 20) { // call every frame now
+    //     lastTestChangeMs = millis();
+    // }
+    // sendTestPulse(testWidths[testWidthIdx]);
+    // if (millis() % 2000 < 10) { // roughly every 2s, advance
+    //     testWidthIdx = (testWidthIdx + 1) % 3;
+    // }
+    // // zp mime ends here
 
     delay(10); // 100Hz loop
 }
