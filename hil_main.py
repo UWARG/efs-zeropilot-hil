@@ -85,10 +85,23 @@ class HilRunner:
         state = self._recv_latest_state()
         if state is not None:
             self._esp32.send_flight_state(state)
+        
+        # debugging
+        # for checking esp32->pi
+        #time.sleep(0.02)
+        #echo = self._esp32._ser.read(self._esp32._ser.in_waiting or 1)
+        #if echo:
+            #print(f"[echo] {echo.hex()}")
+            
+        #raw = self._esp32._ser.read(self._esp32._ser.in_waiting or 1)
+        #if raw:
+            #print(f"[debug] raw bytes: {raw.hex()}")
 
         # forward the newest PWM capture from the ESP32 into JSBSim's controls
         pwm = self._esp32.poll_pwm_capture()
         if pwm is not None:
+            #print(f"[hil] pwm is not none")
+            print(f"[hil] PWM: {pwm}")
             controls = [
                 pwm_us_to_normalized(us, bipolar)
                 for us, bipolar in zip(pwm, CHANNEL_IS_BIPOLAR)
@@ -97,6 +110,8 @@ class HilRunner:
                 struct.pack("ddddd", *controls),
                 (cfg.UDP_HOST, cfg.JSBSIM_CONTROL_PORT),
             )
+        else:
+            print(f"[hil] pwm is none")
 
     def _recv_latest_state(self):
         """
