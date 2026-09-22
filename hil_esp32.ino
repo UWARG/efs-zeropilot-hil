@@ -428,7 +428,7 @@ void setup()
     GPS.begin(GPS_BAUD, SERIAL_8N1, GPS_RX_PIN, GPS_TX_PIN);
 
     setupFakeINA228Registers();
-    Wire.begin(INA228_ADDR); // I2C slave, default pins GPIO21(SDA) GPIO22(SCL)
+    Wire.begin(INA228_ADDR, 8, 9); // ESP32 SDA=8 -> ZP PB9, ESP32 SCL=9 -> ZP PB8 (I2C1)
     Wire.onReceive(onReceive);
     Wire.onRequest(onRequest);
 

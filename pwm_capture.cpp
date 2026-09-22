@@ -1,13 +1,13 @@
 /*
 packet format (matches hil_config.py's PWM_CAPTURE_FORMAT = ">B5H"):
 
-[0xAA][0x02][type byte][5 x uint16, big endian][CRC8][0x55] (14 bytes total)
-CRC8 is an XOR over the type byte + the 10 data bytes
+[0xAA][0x02 type byte][5 x uint16, big endian][XOR checksum][0x55] (14 bytes total)
 */
 
 #include "pwm_capture.h"
 
-// TODO: pin 25->elevator, 4->aileron, 5->rudder, 6->flap, 7->throttle when physically connect to ZP's 5 PWM outputs
+// 15->elevator (STM32 PE4 TIM3CH2), 4->aileron (PE3 TIM3CH1), 5->rudder (PE6 TIM3CH4),
+// 6->flap (PE9 TIM1CH1), 7->throttle (PE5 TIM3CH3)
 static const uint8_t PWM_CAPTURE_PINS[PWM_CAPTURE_NUM_CHANNELS] = {15, 4, 5, 6, 7};
 
 // order matches hil_config.py's PWM_CHANNEL_NAMES:
@@ -49,7 +49,7 @@ void setupPwmCapture() {
     }
 }
 
-static uint8_t crc8(const uint8_t* data, size_t len) {
+static uint8_t crc8(const uint8_t* data, size_t len) { // just an XOR checksum
     uint8_t crc = 0;
     for (size_t i = 0; i < len; i++) {
         crc ^= data[i];
