@@ -319,6 +319,7 @@ void sendNmeaSentence(const char *body)
     char sentence[160];
     snprintf(sentence, sizeof(sentence), "$%s*%02X\r\n", body, nmeaChecksum(body));
     GPS.print(sentence);
+    // Serial.print(sentence);   // TEMP
 }
 
 void sendGpsNmea()
@@ -428,9 +429,13 @@ void setup()
     GPS.begin(GPS_BAUD, SERIAL_8N1, GPS_RX_PIN, GPS_TX_PIN);
 
     setupFakeINA228Registers();
-    Wire.begin(INA228_ADDR, 8, 9); // ESP32 SDA=8 -> ZP PB9, ESP32 SCL=9 -> ZP PB8 (I2C1)
+    // Wire.begin(INA228_ADDR, 8, 9); // ESP32 SDA=8 -> ZP PB9, ESP32 SCL=9 -> ZP PB8 (I2C1)
     Wire.onReceive(onReceive);
     Wire.onRequest(onRequest);
+
+    bool i2cOk = Wire.begin((uint8_t)INA228_ADDR, 8, 9, 400000); // ESP32 SDA=8 -> ZP PB9, ESP32 SCL=9 -> ZP PB8 (I2C1)
+    Serial.print("[ESP32] I2C slave begin: ");
+    Serial.println(i2cOk ? "ok" : "FAILED");
 
     setupPwmCapture();
     // // zp mime starts here
