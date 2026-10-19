@@ -17,6 +17,10 @@ static const uint8_t PWM_CAPTURE_PINS[PWM_CAPTURE_NUM_CHANNELS] = {15, 4, 5, 6, 
 static volatile uint16_t g_pulseWidthUs[PWM_CAPTURE_NUM_CHANNELS] = {0};
 static volatile uint32_t g_risingEdgeUs[PWM_CAPTURE_NUM_CHANNELS] = {0};
 
+// standard RC servo pulse is 1000-2000 us (1500 us center) at 50 Hz, with margin of 200 us
+static constexpr uint32_t PWM_MIN_VALID_US = 800;
+static constexpr uint32_t PWM_MAX_VALID_US = 2200;
+
 // one ISR per pin, since attachInterrupt doesn't tell you which pin fired, 
 // wrapping a shared handler with a channel index avoids five nearly identical functions
 // IRAM_ATTR keeps this in fast RAM since ISRs can't safely run from flash on the ESP32
@@ -30,7 +34,7 @@ void IRAM_ATTR onPwmEdge() {
         // falling edge: pulse finished, compute width
         uint32_t width = now - g_risingEdgeUs[CH];
         // reject anything outside a sane servo range
-        if (width >= 800 && width <= 2200) {
+        if (width >= PWM_MIN_VALID_US && width <= PWM_MAX_VALID_US) {
             g_pulseWidthUs[CH] = (uint16_t)width;
         }
     }
